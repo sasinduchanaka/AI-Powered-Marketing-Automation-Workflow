@@ -45,6 +45,7 @@ It integrates data scraping, AI-based content generation, and Google Workspace a
 ## 🗂️ File Structure
 
 ├── Guardians.json # n8n workflow export file
+
 └── README.md # Project documentation
 
 
