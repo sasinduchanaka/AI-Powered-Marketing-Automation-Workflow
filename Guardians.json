@@ -1,0 +1,551 @@
+{
+  "name": "Guardians",
+  "nodes": [
+    {
+      "parameters": {
+        "formTitle": "Marketing Automation",
+        "formDescription": "Submit your Information Below",
+        "formFields": {
+          "values": [
+            {
+              "fieldLabel": "Target company industry",
+              "placeholder": "e.g. Plumber",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Your Location",
+              "placeholder": "e.g. Kandy, Sri Lanka",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Target Country",
+              "placeholder": "e.g. Sri Lanka",
+              "requiredField": true
+            },
+            {
+              "fieldLabel": "Email Style",
+              "fieldType": "dropdown",
+              "fieldOptions": {
+                "values": [
+                  {
+                    "option": "Friendly"
+                  },
+                  {
+                    "option": "Professional"
+                  },
+                  {
+                    "option": "Simple"
+                  }
+                ]
+              }
+            },
+            {
+              "fieldLabel": "Target city",
+              "placeholder": "Colombo",
+              "requiredField": true
+            }
+          ]
+        },
+        "options": {
+          "appendAttribution": false,
+          "buttonLabel": "GO 🚀"
+        }
+      },
+      "id": "40659573-b434-4aba-bc46-1f091ba08e93",
+      "name": "On form submission1",
+      "type": "n8n-nodes-base.formTrigger",
+      "position": [-880, 128],
+      "webhookId": "96a91a14-1d8c-430b-88ba-5e7166045d9b",
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "url": "=https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_i1Rvc34linRZ4ScvxHwx6Q3yXJEvPr05lWV2",
+        "sendBody": true,
+        "specifyBody": "json",
+        "jsonBody": "={\n    \"includeWebResults\": false,\n    \"language\": \"en\",\n    \"locationQuery\": \"{{ $json[\"Your Location\"] }}\",\n    \"maxImages\": 0,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"scrapeContacts\": false,\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapePlaceDetailPage\": false,\n    \"scrapeReviewsPersonalData\": true,\n    \"scrapeTableReservationProvider\": false,\n    \"searchStringsArray\": [\n        \"{{ $json[\"Target company industry\"] }}\"\n    ],\n    \"skipClosedPlaces\": false\n}",
+        "options": {}
+      },
+      "id": "67d1560b-3468-49fa-af70-611ed6e16540",
+      "name": "HTTP Request1",
+      "type": "n8n-nodes-base.httpRequest",
+      "position": [-656, 128],
+      "typeVersion": 4.2
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "0906e21a-0958-433e-b400-8694915ef3c9",
+              "operator": {
+                "type": "string",
+                "operation": "exists",
+                "singleValue": true
+              },
+              "leftValue": "={{ $json.website }}",
+              "rightValue": ""
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "e369ce39-3b03-46df-b41a-ab7620ff2474",
+      "name": "Filter",
+      "type": "n8n-nodes-base.filter",
+      "position": [-432, 128],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {
+        "text": "=Website: {{ $json.website }}",
+        "attributes": {
+          "attributes": [
+            {
+              "name": "Email Address",
+              "description": "=find out the best only one email address from the website after scraping the website. The mail address have to be in ideal format.",
+              "required": true
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "ecec7d54-4e05-44a2-b35c-0e212426737e",
+      "name": "Information Extractor",
+      "type": "@n8n/n8n-nodes-langchain.informationExtractor",
+      "position": [-832, 368],
+      "typeVersion": 1.2
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "11W6jgJZIDO_X9bvTdnZsLDjTze07aX97m1x3QUbkrsU",
+          "mode": "list",
+          "cachedResultName": "Guardians_Leads",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11W6jgJZIDO_X9bvTdnZsLDjTze07aX97m1x3QUbkrsU/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/11W6jgJZIDO_X9bvTdnZsLDjTze07aX97m1x3QUbkrsU/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Phone_Number": "={{ $('Filter').item.json.phone }}",
+            "contact_email": "={{ $json.output[\"Email Address\"] }}",
+            "website": "={{ $('Filter').item.json.website }}",
+            "company_name": "={{ $('Filter').item.json.title }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "company_name",
+              "displayName": "company_name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "website",
+              "displayName": "website",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "contact_email",
+              "displayName": "contact_email",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Phone_Number",
+              "displayName": "Phone_Number",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "LinkedIn_link",
+              "displayName": "LinkedIn_link",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "id": "f8f146f3-f831-4f57-b2b1-868b35907172",
+      "name": "Append row in sheet",
+      "type": "n8n-nodes-base.googleSheets",
+      "position": [-128, 320],
+      "typeVersion": 4.6,
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "wwMvjr2MsDMHhihx",
+          "name": "Google Sheets account 8"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "conditions": {
+          "options": {
+            "version": 2,
+            "leftValue": "",
+            "caseSensitive": true,
+            "typeValidation": "strict"
+          },
+          "combinator": "and",
+          "conditions": [
+            {
+              "id": "0601f2d2-2522-471e-9e11-29498a47e19a",
+              "operator": {
+                "type": "string",
+                "operation": "contains"
+              },
+              "leftValue": "={{ $json.output['Email Address'] }}",
+              "rightValue": "@"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "4f72c895-15b5-4d11-b876-9cfb64ec9840",
+      "name": "If",
+      "type": "n8n-nodes-base.if",
+      "position": [-416, 368],
+      "typeVersion": 2.2
+    },
+    {
+      "parameters": {},
+      "id": "b97d3060-2335-481c-b4f4-5f5aa1981bf5",
+      "name": "No Operation, do nothing",
+      "type": "n8n-nodes-base.noOp",
+      "position": [-128, 528],
+      "typeVersion": 1
+    },
+    {
+      "parameters": {
+        "model": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "Claude Sonnet 4"
+        },
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatAnthropic",
+      "typeVersion": 1.3,
+      "position": [-624, 528],
+      "id": "a125012b-7de4-45b6-af72-d1e1e2220c22",
+      "name": "Anthropic Chat Model",
+      "credentials": {
+        "anthropicApi": {
+          "id": "YqykgtHkrkt8iEgQ",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {
+          "reset": false
+        }
+      },
+      "id": "275b532d-32ff-4295-a2d2-ea5baeeedcbf",
+      "name": "Split In Batches",
+      "type": "n8n-nodes-base.splitInBatches",
+      "position": [176, 320],
+      "typeVersion": 3,
+      "alwaysOutputData": true
+    },
+    {
+      "parameters": {
+        "assignments": {
+          "assignments": [
+            {
+              "id": "email-body",
+              "name": "email_content",
+              "value": "={{ $json.email_content }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-email",
+              "name": "leadEmail",
+              "value": "={{ $json.contact_email }}",
+              "type": "string"
+            },
+            {
+              "id": "lead-company",
+              "name": "leadCompany",
+              "value": "={{ $json.company_name }}",
+              "type": "string"
+            },
+            {
+              "id": "workflow-id",
+              "name": "workflowExecutionId",
+              "value": "={{ $execution.id }}",
+              "type": "string"
+            },
+            {
+              "id": "item-index",
+              "name": "itemIndex",
+              "value": "={{ $itemIndex }}",
+              "type": "number"
+            }
+          ]
+        },
+        "options": {}
+      },
+      "id": "c7315b5f-334d-42e9-96ce-54730f222422",
+      "name": "Extract Email Content",
+      "type": "n8n-nodes-base.set",
+      "position": [1024, 352],
+      "typeVersion": 3.4
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "claude-sonnet-4-20250514",
+          "mode": "list",
+          "cachedResultName": "claude-sonnet-4-20250514"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "={\n  \"model\": \"claude-3-5-sonnet-20241022\",\n  \"max_tokens\": 1024,\n  \"messages\": [\n    {\n      \"role\": \"user\",\n      \"content\": \"You are an expert email marketing copywriter. Create an engaging, personalized promotional email that is concise, professional, and compelling. Keep the email under 150 words. Only provide the email body content, no subject line.\\n\\nInput details:\\n{\\n  \\\"Phone_Number\\\": \\\"+94 71 731 6892\\\",\\n  \\\"contact_email\\\": \\\"muthukudaconstructions@gmail.com\\\",\\n  \\\"website\\\": \\\"https://muthukudaconstructions.com/\\\",\\n  \\\"company_name\\\": \\\"Muthukuda Engineering and Construction (Pvt) Ltd\\\"\\n}\\n\\nMy details:\\n{\\n  \\\"name\\\": \\\"Chanaka\\\",\\n  \\\"email\\\": \\\"Chanaka@gmail.com\\\"\\n}\\n\\nInstructions:\\n1. Write the email body content directly (no subject line).\\n2. Do not use placeholders inside the email.\\n3. Return the final response **ONLY** as a valid JSON object without explanation, markdown, or code fences.\\n\\nFinal output format strictly:\\n{\\n  \\\"Phone_Number\\\": \\\"...\\\",\\n  \\\"contact_email\\\": \\\"...\\\",\\n  \\\"website\\\": \\\"...\\\",\\n  \\\"company_name\\\": \\\"...\\\",\\n  \\\"email_content\\\": \\\"...\\\"\\n}\"\n\nonly json output. no any comment or intro needed\n    }\n  ]\n}\n"
+            }
+          ]
+        },
+        "options": {
+          "webSearch": true
+        }
+      },
+      "type": "@n8n/n8n-nodes-langchain.anthropic",
+      "typeVersion": 1,
+      "position": [336, 80],
+      "id": "4dfaf155-c3c2-4926-bf42-4df21958a73e",
+      "name": "Message a model1",
+      "credentials": {
+        "anthropicApi": {
+          "id": "YqykgtHkrkt8iEgQ",
+          "name": "Anthropic account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "resource": "draft",
+        "subject": "Personalized software for your business",
+        "message": "={{ $json.email_content }}",
+        "options": {
+          "sendTo": "={{ $json.leadEmail }}"
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [1232, 352],
+      "id": "5a35eb1a-6a5a-43b2-97ab-a845f775af01",
+      "name": "Create a draft",
+      "webhookId": "6fbacb9f-3006-4a26-a2ba-da177163974c",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "MGqsWUheEJUJx6Cp",
+          "name": "Gmail account 5"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "return JSON.parse($input.first().json.content[0].text);\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [688, 80],
+      "id": "b30bbbc5-9904-48d4-8258-780577da61ca",
+      "name": "Code in JavaScript"
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "On form submission1": {
+      "main": [
+        [
+          {
+            "node": "HTTP Request1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "HTTP Request1": {
+      "main": [
+        [
+          {
+            "node": "Filter",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Information Extractor": {
+      "main": [
+        [
+          {
+            "node": "If",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "If": {
+      "main": [
+        [
+          {
+            "node": "Append row in sheet",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "No Operation, do nothing",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Filter": {
+      "main": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Append row in sheet": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Anthropic Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "Information Extractor",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Split In Batches": {
+      "main": [
+        [],
+        [
+          {
+            "node": "Message a model1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Extract Email Content": {
+      "main": [
+        [
+          {
+            "node": "Create a draft",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model1": {
+      "main": [
+        [
+          {
+            "node": "Code in JavaScript",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Create a draft": {
+      "main": [
+        [
+          {
+            "node": "Split In Batches",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code in JavaScript": {
+      "main": [
+        [
+          {
+            "node": "Extract Email Content",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": true,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "abe20717-d00c-4eab-a4df-58a2b8c40057",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "c9b51681239ba9ebcda3a8a526aefeef92bbe57ac10e2f6a70353a4b3cb21142"
+  },
+  "id": "yOO0AgIqQD7MpPJO",
+  "tags": []
+}
