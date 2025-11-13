@@ -60,7 +60,7 @@
     },
     {
       "parameters": {
-        "url": "=https://api.apify.com/v2/acts/compass~crawler-google-places/run-sync-get-dataset-items?token=apify_api_i1Rvc34linRZ4ScvxHwx6Q3yXJEvPr05lWV2",
+        "url": "apify-APIcode",
         "sendBody": true,
         "specifyBody": "json",
         "jsonBody": "={\n    \"includeWebResults\": false,\n    \"language\": \"en\",\n    \"locationQuery\": \"{{ $json[\"Your Location\"] }}\",\n    \"maxImages\": 0,\n    \"maximumLeadsEnrichmentRecords\": 0,\n    \"scrapeContacts\": false,\n    \"scrapeDirectories\": false,\n    \"scrapeImageAuthors\": false,\n    \"scrapePlaceDetailPage\": false,\n    \"scrapeReviewsPersonalData\": true,\n    \"scrapeTableReservationProvider\": false,\n    \"searchStringsArray\": [\n        \"{{ $json[\"Target company industry\"] }}\"\n    ],\n    \"skipClosedPlaces\": false\n}",
