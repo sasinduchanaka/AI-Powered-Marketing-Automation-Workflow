@@ -102,7 +102,6 @@ A marketing team wants to target construction companies in *Colombo, Sri Lanka*.
 
 ## 📊 Automation Flow
 
-```mermaid
 flowchart TD
     A[Form Trigger] --> B[Apify Google Places API]
     B --> C[Filter Valid Websites]
