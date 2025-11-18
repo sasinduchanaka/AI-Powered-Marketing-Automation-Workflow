@@ -3,7 +3,7 @@
 **Guardians** is an intelligent marketing automation workflow built using **n8n**, designed to discover and engage potential business leads automatically.  
 It integrates data scraping, AI-based content generation, and Google Workspace automation to streamline outbound marketing campaigns.
 
----
+-----
 
 ## 🚀 Features
 
